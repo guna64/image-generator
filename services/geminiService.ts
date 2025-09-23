@@ -21,7 +21,6 @@ export const generateVideo = async ({
   prompt,
   imageFile,
   aspectRatio,
-  generateAudio,
   onProgress,
 }: GenerateVideoParams): Promise<string> => {
   if (!apiKey) {
@@ -46,7 +45,6 @@ export const generateVideo = async ({
     config: {
       numberOfVideos: 1,
       aspectRatio: aspectRatio,
-      generateAudio: generateAudio,
     }
   });
 

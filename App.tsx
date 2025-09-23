@@ -10,7 +10,6 @@ const App: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('16:9');
-  const [generateAudio, setGenerateAudio] = useState<boolean>(true);
   const [resolution, setResolution] = useState<Resolution>('1080p');
   const [loadingState, setLoadingState] = useState<LoadingState>({ isLoading: false, message: '' });
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +59,6 @@ const App: React.FC = () => {
         prompt,
         imageFile,
         aspectRatio,
-        generateAudio,
         resolution,
         onProgress
       });
@@ -134,13 +132,6 @@ const App: React.FC = () => {
                 </select>
                 <p className="text-xs text-gray-500">Note: Model may override resolution.</p>
             </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Sound</span>
-            <button type='button' onClick={() => setGenerateAudio(!generateAudio)} className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors ${generateAudio ? 'bg-indigo-600' : 'bg-gray-200'}`}>
-                <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${generateAudio ? 'translate-x-6' : 'translate-x-1'}`}/>
-            </button>
         </div>
         
         <button type="submit" disabled={loadingState.isLoading} className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-all transform hover:scale-105">

@@ -5,7 +5,6 @@ export interface VideoOptions {
   prompt: string;
   imageFile: File | null;
   aspectRatio: AspectRatio;
-  generateAudio: boolean;
   resolution: Resolution;
 }
 
