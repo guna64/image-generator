@@ -39,7 +39,7 @@ export const generateVideo = async ({
   onProgress("Sending request to VEO model...");
 
   let operation = await ai.models.generateVideos({
-    model: 'VO-3.0-generate-preview',
+    model: 'veo-3.0-generate-preview',
     prompt: prompt,
     image: imagePayload,
     config: {
