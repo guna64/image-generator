@@ -28,7 +28,7 @@ export const generateImage = async ({
 
   const ai = new GoogleGenAI({ apiKey });
   
-  onProgress("Preparing assets...");
+  onProgress("Mempersiapkan aset...");
   
   const parts: any[] = [];
   
@@ -44,7 +44,7 @@ export const generateImage = async ({
   
   parts.push({ text: prompt });
 
-  onProgress("Sending request to Banana model...");
+  onProgress("Mengirim permintaan ke model Banana...");
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash-image-preview',
@@ -56,7 +56,7 @@ export const generateImage = async ({
     },
   });
   
-  onProgress("Finalizing image...");
+  onProgress("Menyelesaikan gambar...");
 
   for (const part of response.candidates[0].content.parts) {
     if (part.inlineData) {

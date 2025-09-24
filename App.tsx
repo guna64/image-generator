@@ -43,7 +43,7 @@ const App: React.FC = () => {
       return;
     }
 
-    setLoadingState({ isLoading: true, message: 'Initiating image generation...' });
+    setLoadingState({ isLoading: true, message: 'Memulai pembuatan gambar...' });
     setError(null);
     setImageUrl(null);
 
@@ -127,7 +127,7 @@ const App: React.FC = () => {
             <div className="text-center p-8">
                 <Spinner />
                 <p className="mt-4 text-lg font-semibold text-gray-800">{loadingState.message}</p>
-                <p className="text-sm text-gray-500">Image generation is usually quick, but can take a moment.</p>
+                <p className="text-sm text-gray-500">Mohon tunggu, gambar sedang dibuat...</p>
             </div>
         )}
         {error && !loadingState.isLoading && (
