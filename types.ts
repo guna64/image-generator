@@ -1,11 +1,7 @@
-export type AspectRatio = '16:9' | '9:16';
-export type Resolution = '720p' | '1080p';
-
-export interface VideoOptions {
+export interface GenerateImageOptions {
+  apiKey: string;
   prompt: string;
   imageFile: File | null;
-  aspectRatio: AspectRatio;
-  resolution: Resolution;
 }
 
 export interface LoadingState {
@@ -13,7 +9,6 @@ export interface LoadingState {
   message: string;
 }
 
-export interface GenerateVideoParams extends VideoOptions {
-  apiKey: string;
+export interface GenerateImageParams extends GenerateImageOptions {
   onProgress: (message: string) => void;
 }

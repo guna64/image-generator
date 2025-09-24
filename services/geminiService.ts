@@ -1,5 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
-import type { GenerateVideoParams } from '../types';
+import { GoogleGenAI, Modality } from "@google/genai";
+import type { GenerateImageParams } from '../types';
 
 const fileToBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -16,73 +16,60 @@ const fileToBase64 = (file: File): Promise<string> =>
   });
 
 
-export const generateVideo = async ({
+export const generateImage = async ({
   apiKey,
   prompt,
   imageFile,
-  aspectRatio,
   onProgress,
-}: GenerateVideoParams): Promise<string> => {
+}: GenerateImageParams): Promise<string> => {
   if (!apiKey) {
-    throw new Error("API key is missing. Please provide a valid Google AI API key.");
+    throw new Error("API key is missing. Please enter your API key.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
   onProgress("Preparing assets...");
   
-  const imagePayload = imageFile ? {
-    imageBytes: await fileToBase64(imageFile),
-    mimeType: imageFile.type,
-  } : undefined;
+  const parts: any[] = [];
+  
+  if (imageFile) {
+    const base64ImageData = await fileToBase64(imageFile);
+    parts.push({
+      inlineData: {
+        data: base64ImageData,
+        mimeType: imageFile.type,
+      },
+    });
+  }
+  
+  parts.push({ text: prompt });
 
-  onProgress("Sending request to VEO model...");
+  onProgress("Sending request to Banana model...");
 
-  let operation = await ai.models.generateVideos({
-    model: 'veo-3.0-generate-preview',
-    prompt: prompt,
-    image: imagePayload,
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash-image-preview',
+    contents: {
+      parts: parts,
+    },
     config: {
-      numberOfVideos: 1,
-      aspectRatio: aspectRatio,
-    }
+        responseModalities: [Modality.IMAGE, Modality.TEXT],
+    },
   });
+  
+  onProgress("Finalizing image...");
 
-  const loadingMessages = [
-    "Warming up the pixels...",
-    "Composing your masterpiece...",
-    "Rendering the final frames...",
-    "This can take a few minutes...",
-    "Almost there, adding the finishing touches..."
-  ];
-  let messageIndex = 0;
-
-  while (!operation.done) {
-    onProgress(loadingMessages[messageIndex % loadingMessages.length]);
-    messageIndex++;
-    await new Promise(resolve => setTimeout(resolve, 10000)); // Poll every 10 seconds
-    try {
-        operation = await ai.operations.getVideosOperation({ operation: operation });
-    } catch (e) {
-        console.error("Polling failed, retrying...", e);
-        // Continue polling even if one check fails
+  for (const part of response.candidates[0].content.parts) {
+    if (part.inlineData) {
+      const base64ImageBytes = part.inlineData.data;
+      const mimeType = part.inlineData.mimeType;
+      return `data:${mimeType};base64,${base64ImageBytes}`;
     }
   }
-
-  onProgress("Finalizing video...");
-
-  if (!operation.response?.generatedVideos?.[0]?.video?.uri) {
-    throw new Error("Video generation failed or returned no URI.");
-  }
   
-  const downloadLink = operation.response.generatedVideos[0].video.uri;
-  
-  onProgress("Downloading generated video...");
-
-  const response = await fetch(`${downloadLink}&key=${apiKey}`);
-  if (!response.ok) {
-    throw new Error(`Failed to download video: ${response.statusText}`);
+  const textResponse = response.text;
+  if (textResponse) {
+    throw new Error(`Image generation failed: ${textResponse}`);
   }
-  const videoBlob = await response.blob();
-  return URL.createObjectURL(videoBlob);
+
+  throw new Error("Image generation failed. No image data found in response.");
 };
