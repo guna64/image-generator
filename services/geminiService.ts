@@ -23,9 +23,9 @@ export const generateImage = async ({
   onProgress,
 }: GenerateImageParams): Promise<string> => {
   if (!apiKey) {
-    throw new Error("API key is missing. Please enter your API key.");
+    throw new Error("API key is missing. Please provide your API key.");
   }
-
+  
   const ai = new GoogleGenAI({ apiKey });
   
   onProgress("Mempersiapkan aset...");
